@@ -15,8 +15,9 @@ public class MemberRepository {
         return member.getId();
     }
 
-    public Member find(Long id) { //회원 조회 
+    public Member find(Long id) { //회원 조회
         return em.find(Member.class, id);
     }
 
 }
+
