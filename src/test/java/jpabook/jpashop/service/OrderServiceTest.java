@@ -7,6 +7,7 @@ import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.exception.NotEnoughStockException;
 import jpabook.jpashop.repository.OrderRepository;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,18 +33,8 @@ public class OrderServiceTest {
     @Test
     public void 상품주문() throws Exception {
         //given
-        //회원 생성
-        Member member = new Member();
-        member.setName("회원1");
-        member.setAddress(new Address("서울", "방배로", "123-123"));
-        em.persist(member);
-
-        //주문 상품 생성
-        Item book = new Book();
-        book.setName("jpa책");
-        book.setPrice(10000);
-        book.setStockQuantity(10);
-        em.persist(book);
+        Member member = createMember();
+        Item book = createBook("jpa 책", 10000, 10);
 
         int orderCount = 2; //2개 주문
 
@@ -58,8 +49,21 @@ public class OrderServiceTest {
         assertEquals("주문 수량만큼 재고가 줄어야 한다.", 8, book.getStockQuantity());
     }
 
-    @Test
+
+    @Test(expected = NotEnoughStockException.class) //직접 만들었던 예외 (재고 수량 에러시)
     public void 상품주문_재고수량초과() throws Exception {
+
+        //given
+        Member member = createMember();
+        Item item = createBook("jpa 책", 10000, 10);
+
+        int orderCount = 11; //재고가 10갠데 11개 주문하므로 오류 나야함
+
+        //when
+        orderService.order(member.getId(), item.getId(), orderCount);
+
+        //then
+        fail("재고 수량 부족 예외가 발생해야 한다.");
 
     }
 
@@ -68,6 +72,21 @@ public class OrderServiceTest {
 
     }
 
+    private Member createMember() { //회원 생성
 
+        Member member = new Member();
+        member.setName("회원1");
+        member.setAddress(new Address("서울", "방배로", "123-123"));
+        em.persist(member);
+        return member;
+    }
 
+    private Item createBook(String name, int orderPrice, int stockQuantity) { //상품(책) 생성
+        Item book = new Book();
+        book.setName(name);
+        book.setPrice(orderPrice);
+        book.setStockQuantity(stockQuantity);
+        em.persist(book);
+        return book;
+    }
 }
