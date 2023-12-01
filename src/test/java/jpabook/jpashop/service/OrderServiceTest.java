@@ -49,7 +49,6 @@ public class OrderServiceTest {
         assertEquals("주문 수량만큼 재고가 줄어야 한다.", 8, book.getStockQuantity());
     }
 
-
     @Test(expected = NotEnoughStockException.class) //직접 만들었던 예외 (재고 수량 에러시)
     public void 상품주문_재고수량초과() throws Exception {
 
@@ -69,6 +68,25 @@ public class OrderServiceTest {
 
     @Test
     public void 주문취소() throws  Exception {
+
+        //given
+        Member member = createMember();
+        Item item = createBook("jpa 책", 10000, 10);
+        int orderCount = 2;
+
+        //(1)주문 넣기
+        Long orderId = orderService.order(member.getId(), item.getId(), orderCount);
+
+        //when
+        //(2) 주문 취소
+        orderService.cancelOrder(orderId);
+
+        //then
+        //(1) 주문 상태가 CANCEL인지 확인
+        Order getOrder = orderRepository.findOne(orderId);
+        assertEquals("주문 취소시 상태는 CANCEL", OrderStatus.CANCEL, getOrder.getStatus());
+        //(2) 재고가 그대로 10개인지 확인
+        assertEquals("주문이 취소된 상품은 그만큼 재고가 증가해야 함", 10, item.getStockQuantity());
 
     }
 
