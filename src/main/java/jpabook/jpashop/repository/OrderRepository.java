@@ -27,7 +27,7 @@ public class OrderRepository {
     }
 
     //주문 엔티티를 검색하는 기능
-    /*public List<Order> findAll(OrderSearch orderSearch) {
+    public List<Order> findAll(OrderSearch orderSearch) {
         //order 엔티티를 조회하는데 member과 조인함
         List<Order> resultList = em.createQuery("select o from Order o join o.member m" +
                         " where o.status = :status " +
@@ -38,7 +38,7 @@ public class OrderRepository {
                 .getResultList();
 
         return resultList;
-    }*/
+    }
 
     //주문 검색 - JPQL로 처리
     public List<Order> findAllByString(OrderSearch orderSearch) {
