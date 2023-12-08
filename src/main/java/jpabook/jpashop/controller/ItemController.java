@@ -92,17 +92,11 @@ public class ItemController {
      * 상품 수정 실행
      */
     @PostMapping("items/{itemId}/edit")
-    public String edit(@ModelAttribute("form") BookForm form) {
+    public String edit(@PathVariable Long itemId, @ModelAttribute("form") BookForm form) {
 
-        Book book = new Book();
-        book.setId(form.getId());
-        book.setName(form.getName());
-        book.setPrice(form.getPrice());
-        book.setStockQuantity(form.getStockQuantity());
-        book.setAuthor(form.getAuthor());
-        book.setIsbn(form.getIsbn());
+        //어설프게 엔티티를 파라미터로 쓰지x -> 필요한 데이터만 사용
+        itemService.updateItem(itemId, form.getName(), form.getPrice(), form.getStockQuantity(), form.getAuthor(), form.getIsbn());
 
-        itemService.saveItem(book);
         return "redirect:/items"; //수정  완료 후 리다이렉트로 목록 띄워줌
     }
 
